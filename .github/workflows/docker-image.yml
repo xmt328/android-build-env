@@ -31,12 +31,20 @@ jobs:
       id: split
       run: echo "::set-output name=version::${BRANCH#v}"
 
+    # - name: Extract version number
+    #   id: split
+    #   env:
+    #     BRANCH: ${{ github.ref_name }}
+    #   run: |
+    #     VERSION="${BRANCH#v}"
+    #     echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: ${{ env.IMAGE_NAME }}:${{ steps.split.outpus.version }}
+        tags: ${{ env.IMAGE_NAME }}:${{ steps.split.outputs.version }}
         labels: |
           org.opencontainers.image.created=${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
           org.opencontainers.image.revision=${{ github.sha }}
