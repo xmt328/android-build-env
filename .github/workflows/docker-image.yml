@@ -25,19 +25,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Split branch name
+    - name: Extract version number
       env:
         BRANCH: ${{ github.ref_name }}
       id: split
-      run: echo "::set-output name=version::${BRANCH#v}"
-
-    # - name: Extract version number
-    #   id: split
-    #   env:
-    #     BRANCH: ${{ github.ref_name }}
-    #   run: |
-    #     VERSION="${BRANCH#v}"
-    #     echo "version=${VERSION}" >> $GITHUB_OUTPUT
+      run: echo "version=${BRANCH#v}" >> $GITHUB_OUTPUT
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
