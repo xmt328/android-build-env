@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - 'image-*'  # 只匹配以 v 开头的版本分支
+      - 'v*'  # 只匹配以 v 开头的版本分支
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
@@ -25,12 +25,18 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    - name: Split branch name
+      env:
+        BRANCH: ${{ github.ref_name }}
+      id: split
+      run: echo "::set-output name=version::${BRANCH#v}"
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: ${{ env.IMAGE_NAME }}:${{ replace(github.ref_name, 'image-', '') }}
+        tags: ${{ env.IMAGE_NAME }}:${{ steps.split.outpus.version }}
         labels: |
           org.opencontainers.image.created=${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
           org.opencontainers.image.revision=${{ github.sha }}
