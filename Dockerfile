@@ -4,7 +4,6 @@ ENV PATH "${JAVA_HOME}/bin:${PATH}"
 COPY --from=eclipse-temurin:21 $JAVA_HOME $JAVA_HOME
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN sed -i "s@http://deb.debian.org/debian@http://mirrors.cloud.tencent.com/debian@g" /etc/apt/sources.list.d/debian.sources
 RUN apt-get update && apt-get install -y git wget unzip
 
 ENV ANDROID_HOME /opt/android-sdk
